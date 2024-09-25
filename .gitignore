@@ -1,0 +1,7 @@
+.env
+api/.idea
+api/bin
+api/.env
+api/wwwroot/pdfs/*
+api/.*
+api/obj

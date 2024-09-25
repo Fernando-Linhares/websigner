@@ -1,0 +1,70 @@
+<div class="bg-gray-900 absolute left-0 right-0 top-0 bottom-0">
+  <div class="w-full flex justify-center pt-20 max-sm:pt-0 ">
+    <div class="bg-gradient-to-r from-sky-950 to-indigo-950 w-1/3 rounded-3xl p-4 max-sm:rounded-none max-sm:w-full">
+      <div class="w-full flex justify-center py-6">
+        <img src="mainicon.png" alt="" class="size-14">
+      </div>
+      <div *ngIf="password.notValid || email.notValid || name.notValid" class="text-red-700 text-center">
+        <div *ngFor="let err of error">
+          Error on field: {{ err?.field }}, {{ err.message }}
+        </div>
+      </div>
+      <div class="w-full flex justify-center py-6">
+        <div class="text-left w-3/4 space-y-2">
+          <div class="text-sm text-white shadow-lg" [ngClass]="{'text-red-700': name.notValid}" >Name</div>
+          <div [ngClass]="{'border-red-500':name.notValid }" class="border border-2 space-x-4 w-full bg-white rounded p-1 flex items-center justify-between px-3 ">
+            <input  type="text" [(ngModel)]="name.text"  class=" w-full ring-0 outline-none text-lg">
+          </div>
+        </div>
+      </div>
+      <div class="w-full flex justify-center py-6">
+        <div class="text-left w-3/4 space-y-2">
+          <div class="text-sm text-white shadow-lg" [ngClass]="{'text-red-700': email.notValid}" >Email</div>
+          <div [ngClass]="{'border-red-500':email.notValid }" class="border border-2 space-x-4 w-full bg-white rounded p-1 flex items-center justify-between px-3 ">
+            <input  type="text" [(ngModel)]="email.text"  class=" w-full ring-0 outline-none text-lg">
+          </div>
+        </div>
+      </div>
+      <div class="w-full flex justify-center py-6">
+        <div class="text-left w-3/4 space-y-2">
+          <div class="text-sm text-white shadow-lg" [ngClass]="{'text-red-700': password.notValid}" >Password</div>
+          <div [ngClass]="{'border-red-500':password.notValid }"  class="space-x-2 w-full bg-white rounded p-1 flex items-center justify-between px-3 border border-2">
+            <input
+              [(ngModel)]="password.text" [attr.type]="password.visible ?
+                'text' : 'password'" class="w-full ring-0 outline-none text-lg"
+            >
+            <i (click)="password.visible = !password.visible" *ngIf="password.visible else visibilityPassword" class="cursor-pointer material-icons" [ngClass]="{'hidden':password.text.length == 0}">visibility_off</i>
+            <ng-template  #visibilityPassword>
+              <i (click)="password.visible = !password.visible" [ngClass]="{'hidden':password.text.length == 0}" class="cursor-pointer material-icons">visibility</i>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+      <div class="w-full flex justify-center py-6">
+        <div class="text-left w-3/4 space-y-2">
+          <div class="text-sm text-white shadow-lg" [ngClass]="{'text-red-700': confirmPassword.notValid}" >Comfirm Password</div>
+          <div [ngClass]="{'border-red-500':confirmPassword.notValid }"  class="space-x-2 w-full bg-white rounded p-1 flex items-center justify-between px-3 border border-2">
+            <input
+              [(ngModel)]="confirmPassword.text" [attr.type]="confirmPassword.visible ?
+                'text' : 'password'" class="w-full ring-0 outline-none text-lg"
+            >
+            <i (click)="confirmPassword.visible = !confirmPassword.visible" *ngIf="confirmPassword.visible else visibilityConfirmPassword" class="cursor-pointer material-icons" [ngClass]="{'hidden':confirmPassword.text.length == 0}">visibility_off</i>
+            <ng-template  #visibilityConfirmPassword>
+              <i (click)="confirmPassword.visible = !confirmPassword.visible" [ngClass]="{'hidden':confirmPassword.text.length == 0}" class="cursor-pointer material-icons">visibility</i>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+      <div class="w-full flex justify-center py-6">
+        <button class="w-3/4 bg-sky-700 rounded p-1 text-slate-200 hover:bg-sky-800" (click)="onSubmit()">
+          Register
+        </button>
+      </div>
+      <div class="flex justify-center">
+        <div class="shadow-lg text-sm text-sky-600 cursor-pointer hover:underline" (click)="gotoLogin()">
+          Have you account already?
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

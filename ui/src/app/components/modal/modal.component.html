@@ -1,0 +1,26 @@
+<div class="bg-black/80 z-10 fixed bottom-0 left-0 right-0 top-0" *ngIf="isOpen">
+  <!-- Header -->
+  <div class="bg-slate-200 h-2/3 w-2/4 relative left-1/4 top-10 rounded-lg divide-y divide-slate-300">
+    <div class="flex w-full justify-between align-center px-4 py-2">
+      <div>
+        <ng-content select=".header.icon"></ng-content>
+      </div>
+      <div>
+        <ng-content select=".header.title"></ng-content>
+      </div>
+      <div>
+       <ng-content select=".header.close"></ng-content>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class=" w-full p-4">
+      <ng-content select=".content"></ng-content>
+    </div>
+
+    <!-- Footer -->
+    <div class="w-full absolute bottom-0  w-full p-4">
+      <ng-content select=".footer"></ng-content>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,27 @@
+services:
+  api:
+    container_name: api
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - '5000:8080'
+    networks:
+      - signer.network
+    depends_on:
+      - db
+  db:
+    container_name: db
+    image: mcr.microsoft.com/mssql/server
+    environment:
+      - 'ACCEPT_EULA=Y'
+      - 'MSSQL_PID=Evaluation'
+      - 'MSSQL_SA_PASSWORD=${DB_PASSWORD}'
+    ports:
+      - '1433:1433'
+    networks:
+      - signer.network
+networks:
+  signer.network:
+    driver: bridge
+    name: signer.network

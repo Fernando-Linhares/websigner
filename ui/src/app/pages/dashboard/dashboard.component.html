@@ -1,0 +1,235 @@
+<div class="bg-gray-900 absolute left-0 right-0 top-0 bottom-0">
+  <div class="bg-gray-700 w-1/4 fixed left-0 top-0 bottom-0">
+    <div class="divide-y divide-slate-500">
+      <div class="pt-2 px-4">
+        <img src="mainicon.png" alt="" class="size-6">
+        <div class="flex items-center justify-between">
+          <div class="flex pr-2 py-8 text-sm text-white space-x-2 items-center">
+            <i class="material-icons">
+              person
+            </i>
+            <div>
+              {{ this.user?.name }}
+            </div>
+          </div>
+          <button (click)="logout()" class="border rounded-lg border-red-600 text-red-600 hover:text-white hover:bg-red-600 flex p-2">
+            <i class="material-icons">logout</i>
+          </button>
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between m-2">
+          <p class="text-white">
+            Certificates
+          </p>
+          <button (click)="openAddCert()" class="hover:bg-green-500 text-white p-2  rounded bg-green-600 flex items-center justify-center ">
+            <i class="material-icons">
+              add_box
+            </i>
+          </button>
+        </div>
+        <div>
+          <!--  certificate list  --->
+          <div class="p-3">
+            <div  *ngFor="let cert of certificates" class="cursor-pointer p-1 m-1 rounded flex justify-between hover:bg-slate-300 items-center"
+                  [ngClass]="{
+                  'bg-slate-200': cert.isActive,
+                  'bg-slate-400': !cert.isActive,
+                  'border-2': cert.isActive,
+                  'border-dotted': cert.isActive,
+                  'border-sky-500': cert.isActive
+                  }"
+                  (click)="selectCert(cert.id)"
+            >
+              <i class="material-icons">
+                verified_user
+              </i>
+              <div>
+                {{ cert.alias }}
+              </div>
+              <div>
+                <button class="flex p-2 text-black hover:text-red-500 text-black items-center" (click)="removeCert(cert.id)">
+                  <i class="material-icons">
+                    close
+                  </i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-white w-3/4 flex justify-center absolute right-0 top-0 bottom-0">
+    <!--- visualizator pdf -->
+    <div class="fixed  w-full z-10 bottom-20 flex justify-center items-center space-x-4" *ngIf="pdfPreview.open">
+      <button class="bg-green-700 rounded text-white p-2 flex items-center justify-center hover:bg-green-600">
+          <i class="material-icons text-6xl">
+            save
+          </i>
+      </button>
+      <button class="bg-sky-700 rounded text-white p-2 flex items-center justify-center hover:bg-sky-600" (click)="signOpen = true">
+        <i class="material-icons text-6xl">
+          check
+        </i>
+      </button>
+      <button class="bg-red-700 rounded text-white p-2 flex items-center justify-center hover:bg-red-600" (click)="rollback()">
+        <i class="material-icons text-6xl">
+          close
+        </i>
+      </button>
+    </div>
+    <iframe *ngIf="pdfPreview.src" [src]="pdfPreview.src" class="w-full h-full"></iframe>
+    <div class="flex items-center">
+      <label class="hover:bg-gray-700 p-2 rounded-lg" for="pdf-viwer" *ngIf="!pdfPreview.src">
+        <i class="material-icons text-9xl">
+          download
+        </i>
+      </label>
+      <input  type="file" class="hidden" id="pdf-viwer" (change)="putPdfFile($event)">
+    </div>
+  </div>
+  <div class="fixed right-2 top-20" (click)="openFolder()">
+    <div class=" flex items-center justify-center bg-sky-700 text-white cursor-pointer p-2 rounded">
+      <i class="material-icons text-4xl">
+        folder
+      </i>
+    </div>
+    <div class="text-white/40">
+      Your pdf's
+    </div>
+  </div>
+</div>
+
+<modal-component [isOpen]="signOpen">
+  <div class="header icon">
+    <i class="material-icons">
+      person
+    </i>
+  </div>
+  <div class="header title">
+    Sign
+  </div>
+  <button class="header close" (click)="signOpen = !signOpen">
+    <i class="material-icons text-slate-400 hover:text-slate-800">
+      close
+    </i>
+  </button>
+  <div class="content">
+    <div class="w-full grid grid-cols-2 space-x-3">
+      <div class="p-3 bg-slate-400 rounded-lg">
+        <div class="text-2xl">File to sign</div>
+        <iframe *ngIf="pdfPreview.src" [src]="pdfPreview.src" ></iframe>
+      </div>
+      <div class="bg-slate-400 rounded-lg p-3">
+        <div class="text-2xl">Certificate</div>
+        <div>{{ getCurrentCertificate()?.alias }}</div>
+        <i class="material-icons">verified</i>
+      </div>
+    </div>
+
+    <div class="w-full flex justify-center py-6 relative top-20">
+      <div class="text-left w-3/4 space-y-2">
+        <div class="flex justify-center">
+          <div class="text-sm " [ngClass]="{'text-red-700': formSign.pin.notValid}">PIN</div>
+        </div>
+        <div class="flex justify-center " >
+          <div [ngClass]="{'border-red-500':formSign.pin.notValid }"  class="space-x-2 w-2/3 bg-white rounded-lg p-1 flex items-center justify-between px-3 border border-2">
+            <input
+              [(ngModel)]="formSign.pin.text" [attr.type]="formSign.pin.visible ?
+                  'text' : 'password'" class="w-full ring-0 outline-none text-lg"
+            >
+            <i (click)="formSign.pin.visible = !formSign.pin.visible" *ngIf="formSign.pin.visible else visibility" class="cursor-pointer material-icons" [ngClass]="{'hidden':formSign.pin.text.length == 0}">visibility_off</i>
+            <ng-template  #visibility>
+              <i (click)="formSign.pin.visible = !formSign.pin.visible" [ngClass]="{'hidden':formSign.pin.text.length == 0}" class="cursor-pointer material-icons">visibility</i>
+            </ng-template>
+          </div>
+        </div>
+        </div>
+    </div>
+  </div>
+  <div class="footer flex justify-end">
+    <button class="text-white bg-green-800 hover:bg-green-700 p-2 flex align-center justify-center rounded-lg" (click)="submitSignature()">
+      <i class="material-icons text-4xl">
+        check
+      </i>
+    </button>
+  </div>
+</modal-component>
+
+<modal-component [isOpen]="folderOpen">
+  <div class="header icon">
+    <i class="material-icons">
+      folder_open
+    </i>
+  </div>
+  <div class="header title">
+    My Pdf's
+  </div>
+  <button class="header close" (click)="closeFolder()">
+    <i class="material-icons text-slate-400 hover:text-slate-800">
+      close
+    </i>
+  </button>
+  <div class="content">
+    This is the content
+  </div>
+  <div class="footer flex justify-end">
+    <button class="text-white bg-green-800 hover:bg-green-700 p-2 flex align-center justify-center rounded-lg" (click)="submitCert()">
+      <i class="material-icons text-4xl">
+        check
+      </i>
+    </button>
+  </div>
+</modal-component>
+
+<modal-component [isOpen]="certOpen">
+  <div class="header icon">
+    <i class="material-icons">
+      folder_open
+    </i>
+  </div>
+  <div class="header title">
+    Add Certificate
+  </div>
+  <button class="header close" (click)="closeCert()">
+    <i class="material-icons text-slate-400 hover:text-slate-800">
+      close
+    </i>
+  </button>
+  <div class="content space-y-10">
+    <div class="text-slate-900 text-2xl text-center">
+      Select your certificate <span class="text-slate-700">(.pfx)</span>
+    </div>
+    <div class="flex justify-center">
+      <div>
+        <div>Alias</div>
+        <input class="text-slate-900 p-2 rounded ring-0 outline-none" type="text" [(ngModel)]="certForm.alias">
+      </div>
+    </div>
+    <div class="flex justify-center items-center w-full space-x-4">
+      <div>
+        {{ certForm?.file?.name }}
+      </div>
+      <div class="bg-sky-700 p-2 rounded hover:bg-sky-600 text-white">
+        <label for="cert-file"  class="cursor-pointer">
+          <i class="text-6xl material-icons">download</i>
+        </label>
+        <input type="file" class="hidden" id="cert-file" (change)="receiveCert($event)">
+      </div>
+    </div>
+  </div>
+  <div class="footer flex justify-end">
+    <button class="text-white bg-green-800 hover:bg-green-700 p-2 flex align-center justify-center rounded-lg" (click)="submitCert()">
+      <i class="material-icons text-4xl">
+        add
+      </i>
+    </button>
+  </div>
+</modal-component>
+
+<div *ngIf="spinOpen" class="bg-black/80 fixed bottom-0 top-0 right-0 left-0 z-20 flex items-center justify-center">
+  <mat-spinner></mat-spinner>
+</div>
+

@@ -1,0 +1,71 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="itext7" Version="8.0.5" />
+    <PackageReference Include="iTextSharp" Version="5.5.13.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="TimeZoneConverter" Version="6.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Models\Scope.cs" />
+    <Compile Remove="Settings.cs" />
+    <Compile Remove="App.cs" />
+    <Compile Remove="config.cs" />
+    <Compile Remove="Setup.cs" />
+    <Compile Remove="docker\**" />
+    <Compile Remove="Controllers\Requests\RequestBase.cs" />
+    <Compile Remove="Controllers\CertificateCrudController.cs" />
+    <Compile Remove="Storage\Private\**" />
+    <Compile Remove="Services\Contracts\**" />
+    <Compile Remove="share\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="docker\**" />
+    <EmbeddedResource Remove="Storage\Private\**" />
+    <EmbeddedResource Remove="Services\Contracts\**" />
+    <EmbeddedResource Remove="share\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="docker\**" />
+    <Content Remove="Storage\Private\**" />
+    <Content Remove="Services\Contracts\**" />
+    <Content Remove="share\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="docker\**" />
+    <None Remove="Storage\Private\**" />
+    <None Remove="Services\Contracts\**" />
+    <None Remove="share\.env.local.example" />
+    <None Remove="share\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Storage\Certs\" />
+    <Folder Include="Storage\Pdfs\" />
+    <Folder Include="wwwroot\pdfs\" />
+  </ItemGroup>
+
+</Project>
