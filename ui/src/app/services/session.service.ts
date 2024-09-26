@@ -7,7 +7,7 @@ import { lastValueFrom } from "rxjs";
   providedIn: 'root'
 })
 export class SessionService {
-  private baseUrl = 'http://localhost:5000';
+  private baseUrl = 'http://ui:5000';
   public isOpen: boolean = false;
   constructor(private http: HttpClient, private router: Router) { }
   public create(id: number, token: string): void {
