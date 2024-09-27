@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Api.Database;
 using Api.Models;
+using Api.Models.Actions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -32,6 +33,15 @@ public abstract class BaseController: ControllerBase
     protected IActionResult AnswerSuccess(object result)
     {
         return Ok(new { data=result });
+    }
+
+    protected IActionResult AnswerPagination<T>(PaginationOutput<T> pagination)
+    {
+        return Ok(new
+        {
+            data = pagination.Data,
+            page = pagination.Pagination,
+        });
     }
 
     protected IActionResult AnswerInternalError()

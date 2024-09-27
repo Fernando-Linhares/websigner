@@ -8,7 +8,6 @@ namespace Api.Database;
 public class DataContext: DbContext
 {
     public DbSet<User> Users { get; set; }
-    public DbSet<SignatureProcess> SignatureProcesses { get; set; }
     public DbSet<ModelFile> Files { get; set; }
     public DbSet<Certificate> Certificates { get; set; }
     public DbSet<Token> Tokens { get; set; }

@@ -21,8 +21,8 @@ public class Token
         var config = new ConfigApp();
         var handler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(config.Get("app.key"));
-        var exporation = config.Get("app.expiration.token");
-        var expires = DateTime.UtcNow.AddHours(Convert.ToDouble(exporation));
+        var expiration = config.Get("app.expiration.token");
+        var expires = DateTime.UtcNow.AddHours(Convert.ToDouble(expiration));
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity((new Claim[]
@@ -32,7 +32,9 @@ public class Token
                 new Claim(ClaimTypes.Email, User.Email),
             })),
             Expires = expires,
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            SigningCredentials = new SigningCredentials(
+                new SymmetricSecurityKey(key),
+                SecurityAlgorithms.HmacSha256Signature)
         };
         var token = handler.WriteToken(handler.CreateToken(tokenDescriptor));
         AccessToken = token;

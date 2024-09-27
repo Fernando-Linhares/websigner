@@ -4,7 +4,6 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {Router} from "@angular/router";
 import {RegisterService} from "../../services/register.service";
 import {ServicesProviderModule} from "../../services-provider/services-provider.module";
-import {SignInService} from "../../services/sign-in.service";
 import {SessionService} from "../../services/session.service";
 
 @Component({
@@ -26,6 +25,7 @@ export class RegisterComponent {
   email = { text: '', visible: false, notValid: false };
   password = { text: '', visible: false, notValid: false };
   confirmPassword = { text: '', visible: false, notValid: false };
+  spinOpen: boolean = false;
 
   error: Array<any> = [];
 
@@ -42,33 +42,42 @@ export class RegisterComponent {
     }
   }
 
-  public onSubmit(): void {
-    if (this.hasEmptyFields()) {
-      return;
-    }
+  public async onSubmit(): Promise<void> {
+    try {
+      this.spinOpen = true;
 
-    if (this.passwordNotMatching()) {
-      this.password.notValid = true;
-      this.confirmPassword.notValid = true;
-      this.error.push({field: "password", message: "The password don't match"});
-      return;
-    }
+        if (this.hasEmptyFields()) {
+        return;
+      }
 
-    if (this.invalidEmail(this.email.text)) {
-      this.email.notValid = true;
-      this.error.push({field: "email", message: "email is not valid"});
-      return;
-    }
+      if (this.passwordNotMatching()) {
+        this.password.notValid = true;
+        this.confirmPassword.notValid = true;
+        this.error.push({field: "password", message: "The password don't match"});
+        return;
+      }
 
-    this.service.register(
-      this.name.text,
-      this.email.text,
-      this.password.text
-    )
-      .subscribe({
-        complete: console.info,
-        error: console.error,
-      });
+      if (this.invalidEmail(this.email.text)) {
+        this.email.notValid = true;
+        this.error.push({field: "email", message: "email is not valid"});
+        return;
+      }
+
+      const {data} = await this.service.register(
+        this.name.text.trim(),
+        this.email.text.trim(),
+        this.password.text.trim()
+      )
+
+      this.sessionService.create(
+        data.id,
+        data.token
+      )
+      this.sessionService.open();
+
+      }finally {
+      this.spinOpen = false;
+    }
   }
 
   private invalidEmail(email: string): boolean {

@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Api.Controllers.Crud.Requests;
 using Api.Database;
 using Api.Models;
+using Api.Models.Actions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -27,38 +28,31 @@ public class CertificateController: BaseController
         [FromQuery(Name = "perPage")] int perPage = 20
         )
     {
-        var certificates = !skipPagination
-            ? await _context.Certificates
-                .Where(c => c.DeletedAt == null)
-                .OrderByDescending(c => c.CreatedAt)
-                .Skip((page - 1) * perPage)
-                .Take(perPage)
-                .ToListAsync()
-            : await _context.Certificates
-                .Where(c => c.DeletedAt == null)
-                .OrderByDescending(c => c.CreatedAt)
-                .ToListAsync();
-        var total = _context.Certificates.Count(c => c.DeletedAt == null);
-        int pages = (int) Math.Ceiling((decimal)total / perPage);
-        return Ok(new
+
+        var query = _context.Certificates
+            .Where(c => c.DeletedAt == null && c.UserId == CurrentUser().Id)
+            .OrderByDescending(c => c.CreatedAt);
+        
+        if (skipPagination)
+        {
+            return Ok(new
             {
-                data = certificates,
-                pagination = new
-                {
-                    page = page,
-                    next = page + (page != pages ? 1 : 0),
-                    count = perPage,
-                    pages = pages,
-                    total = total
-                } 
+                data = await query.ToListAsync()
             });
+        }
+        
+        var total = _context.Certificates.Count(c => c.DeletedAt == null && c.UserId == CurrentUser().Id);
+
+        var input = new PaginationInput<Certificate>(page, perPage, total, query);
+        var model = new Certificate();
+        return AnswerPagination(await model.Paginate(input));
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Show(long id)
     {
         Certificate? cert =  await _context.Certificates
-            .Where(c => c.Id == id && c.DeletedAt == null)
+            .Where(c => c.Id == id && c.DeletedAt == null && c.UserId == CurrentUser().Id)
             .FirstOrDefaultAsync();
 
         if (cert is null)
@@ -67,6 +61,14 @@ public class CertificateController: BaseController
         }
         
         return AnswerSuccess(cert);
+    }
+
+    private bool UserHasCertificate()
+    {
+        return _context
+            .Certificates
+            .Any(c => c.UserId == CurrentUser().Id
+                      && c.DeletedAt == null);
     }
 
     [HttpPost]
@@ -89,7 +91,8 @@ public class CertificateController: BaseController
            Alias = certificate.Name,
            UserId = user.Id,
            CreatedAt = DateTime.Now,
-           ExpiresAt = DateTime.Now
+           ExpiresAt = DateTime.Now,
+           IsActive = !UserHasCertificate()
        };
        _context.Certificates.Add(cert);
        await _context.SaveChangesAsync();
@@ -116,6 +119,11 @@ public class CertificateController: BaseController
     [HttpPatch("{id}")]
     public async Task<IActionResult> Select(long id)
     {
+        if (!UserHasCertificate())
+        {
+            return NotFound();
+        }
+        
         var cert = await _context.Certificates.FindAsync(id);
         cert.IsActive = true;
         _context.Certificates.Update(cert);

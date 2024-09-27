@@ -10,12 +10,7 @@ namespace Api.Controllers;
 [Route("[controller]")]
 public class MeController : BaseController
 {
-    protected readonly DataContext _context;
-
-    public MeController(DataContext context): base(context)
-    {
-        _context = context;
-    }
+    public MeController(DataContext context): base(context) {}
 
     [HttpGet]
     public async Task<IActionResult> GetUserIdentity()

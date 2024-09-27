@@ -38,6 +38,7 @@
     <Compile Remove="Storage\Private\**" />
     <Compile Remove="Services\Contracts\**" />
     <Compile Remove="share\**" />
+    <Compile Remove="Controllers\Crud\CrudController.cs" />
   </ItemGroup>
 
   <ItemGroup>

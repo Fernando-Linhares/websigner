@@ -1,9 +1,5 @@
-using System.Security.Claims;
 using Api.Controllers.Requests;
 using Api.Database;
-using Api.Models;
-using Api.Models.Enums;
-using ModelFile=Api.Models.File;
 using Api.Services.Signature;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -44,25 +40,26 @@ public class SignPdfController : BaseController
 
       try
       {
-         var user = CurrentUser();
-         var signature = await BeginSignature(user);
-
          var inputDto = new SignatureInput(
             cert,
             request.File,
             request.Pin);
 
          var output = await _signature.Signature(inputDto);
-         var config = new ConfigApp();
-
-         await DefireSignature(signature, SignatureStatus.Ok);
-         await PersistFile(signature, output.SignedFile);
-
+         var fileSinged = new Api.Models.File
+         {
+            FileName = output.SignedFile,
+            UserId = CurrentUser().Id,
+            CreatedAt = DateTime.Now
+         };
+         _context.Files.Add(fileSinged);
+         await _context.SaveChangesAsync();
+         
          await transaction.CommitAsync();
          return AnswerSuccess(new
          {
-            url = config.Get("app.url") + "pdfs/" + output.SignedFile,
-            timestamp = output.Timestamp
+            url = fileSinged.Url(),
+            timestamp = fileSinged.CreatedAtTimestamp()
          });
       }
       catch (Exception e)
@@ -78,35 +75,5 @@ public class SignPdfController : BaseController
             }
          });
       }
-   }
-
-   private async Task PersistFile(SignatureProcess signature, string filename)
-   {
-      var file = new ModelFile
-      {
-         FileName = filename,
-         SignatureProcessId = signature.Id,
-      };
-      _context.Files.Add(file);
-      await _context.SaveChangesAsync();
-   }
-   
-   private async Task DefireSignature(SignatureProcess signature, SignatureStatus status)
-   {
-      signature.Status = status;
-      _context.SignatureProcesses.Update(signature);
-      await _context.SaveChangesAsync();
-   }
-
-   private async Task<SignatureProcess> BeginSignature(User user)
-   {
-      var signature = new SignatureProcess
-      {
-         UserId = user.Id,
-         Date = DateTime.Now
-      };
-      _context.SignatureProcesses.Add(signature);
-      await _context.SaveChangesAsync();
-      return signature;
    }
 }

@@ -2,14 +2,17 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
 import { Router } from "@angular/router";
 import { lastValueFrom } from "rxjs";
+import {BaseServiceService} from "./base-service.service";
 
 @Injectable({
   providedIn: 'root'
 })
-export class SessionService {
-  private baseUrl = 'http://ui:5000';
+export class SessionService extends BaseServiceService
+{
   public isOpen: boolean = false;
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private http: HttpClient, private router: Router) {
+    super();
+  }
   public create(id: number, token: string): void {
     localStorage.setItem('user', JSON.stringify({
       id,

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Api.Models.Actions;
 
 namespace Api.Models;
 
@@ -14,4 +15,10 @@ public class Certificate
     public DateTime CreatedAt { get; set; }
     public DateTime ExpiresAt { get; set; }
     public DateTime? DeletedAt { get; set; }
+
+    public async Task<PaginationOutput<Certificate>> Paginate(PaginationInput<Certificate> input)
+    {
+        var paginateAsync = new PaginateAsync<Certificate>();
+        return await paginateAsync.Execute(input);
+    }
 }

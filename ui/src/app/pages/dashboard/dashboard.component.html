@@ -165,22 +165,29 @@
     </i>
   </div>
   <div class="header title">
-    My Pdf's
+    Signed Files
   </div>
   <button class="header close" (click)="closeFolder()">
     <i class="material-icons text-slate-400 hover:text-slate-800">
       close
     </i>
   </button>
-  <div class="content">
-    This is the content
+  <div class="content px-4 py-2">
+    <div class="grid grid-cols-4  space-x-4 ">
+      <div *ngFor="let file of files" (click)="viewPdfSigned(file)" class="bg-slate-100 p-2 divide-y divide-slate-400 rounded-lg border border-slate-400 cursor-pointer hover:bg-white">
+        <div class="flex justify-between">
+          <i class="text-red-700 material-icons text-4xl">insert_drive_file</i>
+          <div class="text-sm text-black/20">Signed at {{ file.createdAt | date: 'dd/MM/yyyy' }}</div>
+        </div>
+        <div class="flex justify-between">
+          <div class="text-sm">
+            {{ file.fileName.length > 20 ? (file.fileName | slice:0:20 ) + '...' : file.fileName }}
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="footer flex justify-end">
-    <button class="text-white bg-green-800 hover:bg-green-700 p-2 flex align-center justify-center rounded-lg" (click)="submitCert()">
-      <i class="material-icons text-4xl">
-        check
-      </i>
-    </button>
+  <div class="footer">
   </div>
 </modal-component>
 
@@ -231,5 +238,14 @@
 
 <div *ngIf="spinOpen" class="bg-black/80 fixed bottom-0 top-0 right-0 left-0 z-20 flex items-center justify-center">
   <mat-spinner></mat-spinner>
+</div>
+
+<div *ngIf="viewSignedPdf.open" class=" bg-black/20 fixed bottom-0 top-0 right-0 left-0 z-20 flex items-center justify-center">
+  <button class="fixed top-20 right-20 z-20" (click)="viewSignedPdf.open = false">
+    <i class="material-icons text-white">close</i>
+  </button>
+  <div class="flex justify-center fixed bottom-10 top-10 left-0 right-0">
+    <iframe *ngIf="viewSignedPdf.open" [src]="viewSignedPdf.src" class=" w-4/5 h-full"></iframe>
+  </div>
 </div>
 
