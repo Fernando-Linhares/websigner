@@ -16,14 +16,15 @@ public class GetterEnv
         {
             var values = line.Split("=");
             var key = values[0];
-            var value = RemoveComments(values[1]);
-            value = ResolveInterpolations(value) ?? value;
-
-            if (key.StartsWith("\n") || key.EndsWith("#"))
+            
+            if (key.StartsWith("\n") || key.StartsWith("#"))
             {
                 continue;
             }
-
+            
+            var value = RemoveComments(values[1]);
+            value = ResolveInterpolations(value) ?? value;
+            
             if (Environment.GetEnvironmentVariable(key) == null)
             {
                 Environment.SetEnvironmentVariable(key, value);

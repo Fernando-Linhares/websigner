@@ -6,6 +6,7 @@ using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.security;
 using X509Parser = Org.BouncyCastle.X509.X509CertificateParser;
 using CryptoException = System.Security.Cryptography.CryptographicException;
+using PdfWriter = iText.Kernel.Pdf.PdfWriter;
 
 namespace Api.Services.Signature;
 
@@ -14,42 +15,34 @@ public class FilePdfSignature: ISignature
     public async Task<SignatureOutput> Signature(SignatureInput input)
     {
         var cert = new CertificateX509(GetCertPath(input.Cert.FileName), input.Pin);
+        string certName = cert.Subject;
         var rawData = GetCertRowData(cert);
-        string filenameout = Path.GetRandomFileName() + Path.GetExtension(input.File.FileName);
-        await using var file = InputFileEncapsulate(input.File, filenameout);
+        string fileNameOut = input.File.FileName;
+        await using var file = InputFileEncapsulate(input.File, fileNameOut);
         using var reader = new PdfReader(file.Name);
         using var stamper = CreateStamperPdf(reader, file);
         var datetime = DateTime.Now;
 
         var signature = GetSignaturePdf(input.Cert.Alias, datetime);
-        var extraText = $"Signed At {datetime:dd/MM/yyyy}";
-        
+        var extraText = $"Signed by {certName} at {datetime:dd/MM/yyyy}";
+
         var appearance = GetSignatureAppearance(stamper, rawData[0], signature, extraText);
         var external = new ExternalSignature(cert);
-        
-        MakeSignature.SignDetached(
-            appearance,
-            external,
-            rawData,
-            null,
-            null,
-            null,
-            0,
-            CryptoStandard.CMS);
-        
+
+        MakeSignature.SignDetached(appearance, external, rawData, null, null, null, 0, CryptoStandard.CMS);
+
         stamper.Close();
         reader.Close();
         file.Close();
-      
-        return new SignatureOutput(datetime.ToBinary(), filenameout);
+
+        return new SignatureOutput(datetime.ToBinary(), fileNameOut);
     }
 
     private PdfSignatureAppearance GetSignatureAppearance(
         PdfStamper stamper,
         BouncyCert cert,
         PdfSignature signature,
-        string extraData
-        )
+        string extraData)
     {
         var apparence = stamper.SignatureAppearance;
         apparence.Certificate = cert;
@@ -59,14 +52,14 @@ public class FilePdfSignature: ISignature
         apparence.Reason = "Personal";
         apparence.Location = "Brazil";
         apparence.Layer2Text = extraData;
-        apparence.Acro6Layers =  true;
-        
+        apparence.Acro6Layers = true;
+
         return apparence;
     }
 
     private PdfStamper CreateStamperPdf(PdfReader reader, FileStream file)
     {
-        return PdfStamper.CreateSignature(reader, file, '0', null, true);
+        return PdfStamper.CreateSignature(reader, file, '\0', null, true);
     }
 
     private PdfSignature GetSignaturePdf(string certAlias, DateTime timestamp)
@@ -77,11 +70,11 @@ public class FilePdfSignature: ISignature
         return signature;
     }
 
-    private FileStream InputFileEncapsulate(IFormFile inputFile, string filenameout)
+    private FileStream InputFileEncapsulate(IFormFile inputFile, string fileNameOut)
     {
         var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "pdfs");
-        var filepath = Path.Combine(path, filenameout);
-        var file =  new FileStream(filepath, FileMode.Create);
+        var filepath = Path.Combine(path, fileNameOut);
+        var file = new FileStream(filepath, FileMode.Create);
         inputFile.CopyTo(file);
         return file;
     }

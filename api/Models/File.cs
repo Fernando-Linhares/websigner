@@ -9,7 +9,6 @@ public class File
     public long Id { get; set; }
     public string FileName { get; set; }
     public long UserId { get; set; }
-    public User User { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? DeletedAt { get; set; }
 
@@ -29,5 +28,11 @@ public class File
     {
         var paginator = new PaginateAsync<File>();
         return await paginator.Execute(input);
+    }
+
+    public string GetPath()
+    {
+        var root = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "pdfs");
+        return Path.Combine(root, FileName);
     }
 }

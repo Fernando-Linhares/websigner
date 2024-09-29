@@ -14,9 +14,18 @@ public class ConfigApp
             ["app.version"] = GetterEnv.Get("APP_VERSION") ?? String.Empty,
             ["app.env"] = GetterEnv.Get("APP_ENV") ?? String.Empty,
             ["app.url"] =  GetterEnv.Get("APP_URL") ?? String.Empty,
+            ["app.frontend"] =  GetterEnv.Get("APP_FRONTEND") ?? String.Empty,
             ["app.key"] = GetterEnv.Get("APP_KEY") ?? String.Empty,
             ["app.expiration.token"] = GetterEnv.Get("EXPIRATION_TOKEN") ?? String.Empty,
-            ["db.connection"] = GetConnectionString()
+            ["db.connection"] = GetConnectionString(),
+            ["smtp.host"] = GetSmtpHost() ?? String.Empty,
+            ["smtp.username"] = GetterEnv.Get("SMTP_USER") ?? String.Empty,
+            ["smtp.email"] = GetterEnv.Get("SMTP_EMAIL") ?? String.Empty,
+            ["smtp.password"] = GetterEnv.Get("SMTP_PASSWORD") ?? String.Empty,
+            ["smtp.port"] = GetterEnv.Get("SMTP_PORT") ?? String.Empty,
+            ["rabbitmq.host"] = GetRabbitMQHost()?? String.Empty,
+            ["rabbitmq.user"] = GetterEnv.Get("RABBITMQ_USER") ?? String.Empty,
+            ["rabbitmq.password"] = GetterEnv.Get("RABBITMQ_PASSWORD") ?? String.Empty
         };
     }
     
@@ -24,6 +33,21 @@ public class ConfigApp
     {
         return _defaults[key];
     }
+
+    private string? GetSmtpHost()
+    {
+        return GetterEnv.Get("APP_ENV") == "local"
+            ? GetterEnv.Get("SMTP_HOST")
+            : GetterEnv.Get("SMTP_CONTAINER");
+    }
+
+    private string? GetRabbitMQHost()
+    {
+        return GetterEnv.Get("APP_ENV") == "local"
+            ? GetterEnv.Get("RABBITMQ_HOSt")
+            : GetterEnv.Get("RABBITMQ_CONTAINER");
+    }
+
 
     private string GetConnectionString()
     {

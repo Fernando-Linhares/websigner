@@ -5,3 +5,8 @@ api/.env
 api/wwwroot/pdfs/*
 api/.*
 api/obj
+data
+consumer/bin
+consumer/.idea
+consumer/logs
+consumer/obj

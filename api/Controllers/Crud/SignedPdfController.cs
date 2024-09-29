@@ -10,7 +10,7 @@ namespace Api.Controllers.Crud;
 
 [Authorize]
 [ApiController]
-[Route("files")]
+[Route("/files")]
 public class SignedPdfController : BaseController
 {
    public SignedPdfController(DataContext context) : base(context) {}
@@ -33,7 +33,7 @@ public class SignedPdfController : BaseController
          });
       }
       var totalCount = await query.CountAsync(f => f.DeletedAt == null && f.UserId == CurrentUser().Id);
-      
+
       var input = new PaginationInput<ModelFile>(page, perPage, totalCount, query);
       var model = new ModelFile();
       return AnswerPagination(await model.Paginate(input));

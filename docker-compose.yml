@@ -11,6 +11,8 @@ services:
     depends_on:
       - db
       - ui
+      - mail
+      - rabbitmq
   db:
     container_name: db
     image: mcr.microsoft.com/mssql/server
@@ -22,6 +24,23 @@ services:
       - '1433:1433'
     networks:
       - signer.network
+  consumer:
+    container_name: consumer
+    build:
+      context: ./consumer
+      dockerfile: Dockerfile
+    environment:
+      - 'RABBITMQ_HOST=${RABBITMQ_HOST}'
+      - 'RABBITMQ_USER=${RABBITMQ_USER}'
+      - 'RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}'
+      - 'SMTP_PORT=${SMTP_PORT}'
+      - 'SMTP_HOST=mail'
+      - 'SMTP_USERNAME=${SMTP_USERNAME}'
+      - 'SMTP_PASSWORD=${SMTP_PASSWORD}'
+    networks:
+      - signer.network
+    depends_on:
+      - rabbitmq
   ui:
     container_name: ui
     image: nginx:latest
@@ -32,6 +51,43 @@ services:
       - './ui/dist/ui/browser:/usr/share/nginx/html'
     networks:
       - signer.network
+  mail:
+    image: axllent/mailpit
+    container_name: mail
+    restart: unless-stopped
+    volumes:
+      - 'mail.data:/data'
+    ports:
+      - 8025:8025
+      - 1025:1025
+    environment:
+      - 'MP_MAX_MESSAGES=5000'
+      - 'MP_DATABASE=/data/mailpit.db'
+      - 'MP_SMTP_AUTH_ACCEPT_ANY=1'
+      - 'MP_SMTP_AUTH_ALLOW_INSECURE=1'
+    networks:
+     - signer.network
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      - 'RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}'
+      - 'RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}'
+    volumes:
+      - 'rabbitmq.data:/var/lib/rabbitmq'
+      - './consumer/logs:/var/log/rabbitmq'
+    networks:
+      - signer.network
+volumes:
+  mail.data:
+    driver: local
+    name: mail.data
+  rabbitmq.data:
+    driver: local
+    name: rabbitmq.data
 networks:
   signer.network:
     driver: bridge
