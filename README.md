@@ -15,7 +15,7 @@ its can be a good system to store certificates and sign documents. Below you can
 
 
 
-## Instalation
+## Installation
 
 Install project cloning repository
 
