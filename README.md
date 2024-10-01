@@ -1,4 +1,4 @@
-[Gravação de ecrã a partir de 01-10-2024 02:44:12.webm](https://github.com/user-attachments/assets/4426647d-08c9-427c-bdc2-691d7c9b1960)# WebSigner
+# WebSigner
 
 ## Overview
 
