@@ -6,6 +6,7 @@ import {SignInService} from "../../services/sign-in.service";
 import {ServicesProviderModule} from "../../services-provider/services-provider.module";
 import {SessionService} from "../../services/session.service";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
+import {HttpErrorResponse} from "@angular/common/http";
 
 @Component({
   selector: 'app-login',
@@ -22,8 +23,8 @@ import {MatProgressSpinner} from "@angular/material/progress-spinner";
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-  password = { text: 'abcd1234', visible: false, notValid: false };
-  login = { text: 'nando2@mail.com.br', notValid: false};
+  password = { text: '', visible: false, notValid: false };
+  login = { text: '', notValid: false};
   error: Array<any> = [];
   spinOpen: boolean = false;
 
@@ -60,11 +61,18 @@ export class LoginComponent {
       )
         .subscribe({
           next: response => this.sessionOpen(response.data),
-          error: console.error,
+          error: (err:HttpErrorResponse) => this.loginFail(err)
         })
-
     }finally {
       this.spinOpen = false;
+    }
+  }
+
+  private loginFail(error: HttpErrorResponse): any {
+    if(error.status == 401 || error.status == 400) {
+      this.login.notValid = true;
+      this.password.notValid = true;
+      this.error.push({field: "email/password", message: "login or password is not valid"});
     }
   }
 
@@ -95,7 +103,11 @@ export class LoginComponent {
     return email.trim().match(/.*[@].*[.].*/i) == null;
   }
 
-  public gotoRegister()  {
+  public gotoRegister(): void {
     this.router.navigate(['/register']);
+  }
+
+  public gotoForgotPassword(): void {
+    this.router.navigate(['/forgot-password']);
   }
 }

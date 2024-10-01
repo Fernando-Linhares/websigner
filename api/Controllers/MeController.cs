@@ -8,20 +8,18 @@ namespace Api.Controllers;
 [Authorize]
 [ApiController]
 [Route("[controller]")]
-public class MeController : BaseController
+public class MeController(DataContext context) : BaseController(context)
 {
-    public MeController(DataContext context): base(context) {}
-
     [HttpGet]
-    public async Task<IActionResult> GetUserIdentity()
+    public Task<IActionResult> GetUserIdentity()
     {
         var user = CurrentUser();
         
-        return AnswerSuccess(new
+        return Task.FromResult(AnswerSuccess(new
         {
             Id = user?.Id,
             Name = user?.Name,
             Email = user?.Email
-        });
+        }));
     }
 }

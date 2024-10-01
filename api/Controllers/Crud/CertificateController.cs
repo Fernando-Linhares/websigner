@@ -12,15 +12,10 @@ namespace Api.Controllers.Crud;
 [Authorize]
 [ApiController]
 [Route("[controller]/")]
-public class CertificateController: BaseController
+public class CertificateController(DataContext context) : BaseController(context)
 {
-    private readonly DataContext _context;
+    private readonly DataContext _context = context;
 
-    public CertificateController(DataContext context): base(context)
-    {
-        _context = context;
-    }
-    
     [HttpGet]
     public async Task<IActionResult> Index(
         [FromQuery(Name = "page")] int page = 1,
@@ -28,7 +23,6 @@ public class CertificateController: BaseController
         [FromQuery(Name = "perPage")] int perPage = 20
         )
     {
-
         var query = _context.Certificates
             .Where(c => c.DeletedAt == null && c.UserId == CurrentUser().Id)
             .OrderByDescending(c => c.CreatedAt);
@@ -75,14 +69,13 @@ public class CertificateController: BaseController
     public async Task<IActionResult> Create([FromForm] CertificateRegisterRequest certificate)
     {
        var path = Path.Combine(Directory.GetCurrentDirectory(), "Storage", "Certs");
-       var file = certificate.file;
+       var file = certificate.File;
        var fileName = Path.GetRandomFileName() + Path.GetExtension(file.FileName);
        var filePath = Path.Combine(path, fileName);
        await using var stream = new FileStream(filePath, FileMode.Create);
        await file.CopyToAsync(stream);
        stream.Close();
 
-       string email = User?.FindFirst(ClaimTypes.Email).Value;
        User? user = CurrentUser();
 
        var cert = new Certificate

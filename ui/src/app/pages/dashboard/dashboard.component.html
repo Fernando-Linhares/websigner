@@ -64,11 +64,6 @@
   <div class="text-white w-3/4 flex justify-center absolute right-0 top-0 bottom-0">
     <!--- visualizator pdf -->
     <div class="fixed  w-full z-10 bottom-20 flex justify-center items-center space-x-4" *ngIf="pdfPreview.open">
-      <button class="bg-green-700 rounded text-white p-2 flex items-center justify-center hover:bg-green-600">
-          <i class="material-icons text-6xl">
-            save
-          </i>
-      </button>
       <button class="bg-sky-700 rounded text-white p-2 flex items-center justify-center hover:bg-sky-600" (click)="signOpen = true">
         <i class="material-icons text-6xl">
           check
@@ -105,7 +100,7 @@
 <modal-component [isOpen]="signOpen">
   <div class="header icon">
     <i class="material-icons">
-      person
+      lock_outline
     </i>
   </div>
   <div class="header title">
@@ -117,20 +112,22 @@
     </i>
   </button>
   <div class="content">
-    <div class="w-full grid grid-cols-2 space-x-3">
-      <div class="p-3 bg-slate-400 rounded-lg">
-        <div class="text-2xl">File to sign</div>
-        <iframe *ngIf="pdfPreview.src" [src]="pdfPreview.src" ></iframe>
-      </div>
-      <div class="bg-slate-400 rounded-lg p-3">
-        <div class="text-2xl">Certificate</div>
-        <div>{{ getCurrentCertificate()?.alias }}</div>
-        <i class="material-icons">verified</i>
+    <div class="w-full flex space-x-2 justify-center">
+      <div class=" p-3">
+        <span class="text-sm text-black/20">cert</span>
+        <div class="flex justify-center pb-3">
+          <i class="material-icons text-3xl">person</i>
+        </div>
+        <div class="">
+          <div class="text-sm">{{ getCurrentCertificate()?.alias }}</div>
+        </div>
+       </div>
+       <div>
       </div>
     </div>
 
-    <div class="w-full flex justify-center py-6 relative top-20">
-      <div class="text-left w-3/4 space-y-2">
+    <div class="w-full flex justify-center relative top-20">
+      <div class="text-left w-3/4 ">
         <div class="flex justify-center">
           <div class="text-sm " [ngClass]="{'text-red-700': formSign.pin.notValid}">PIN</div>
         </div>
@@ -149,11 +146,11 @@
         </div>
     </div>
   </div>
-  <div class="footer flex justify-end">
-    <button class="text-white bg-green-800 hover:bg-green-700 p-2 flex align-center justify-center rounded-lg" (click)="submitSignature()">
-      <i class="material-icons text-4xl">
-        check
-      </i>
+  <div class="footer flex justify-center">
+    <button class="text-white bg-green-800 hover:bg-green-700 p-2 flex align-center justify-center rounded-lg items-center" (click)="submitSignature()">
+      <span>
+        Confirm
+      </span>
     </button>
   </div>
 </modal-component>

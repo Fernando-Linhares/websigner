@@ -8,6 +8,7 @@ import {CertificateService} from "../services/certificate.service";
 import {SignatureService} from "../services/signature.service";
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {FilesService} from "../services/files.service";
+import {ForgotPasswordServiceService} from "../services/forgot-password-service.service";
 
 @NgModule({
   declarations: [],
@@ -17,7 +18,8 @@ import {FilesService} from "../services/files.service";
     SessionService,
     CertificateService,
     SignatureService,
-    FilesService
+    FilesService,
+    ForgotPasswordServiceService
   ],
   imports: [
     HttpClientModule,

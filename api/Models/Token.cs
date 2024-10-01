@@ -18,11 +18,17 @@ public class Token
 
     public void GenerateToken()
     {
-        var config = new ConfigApp();
+        var expires = DateTime.UtcNow.AddHours(Convert.ToDouble(GetDefaultExpirationDate()));
+        var key = GetKey();
+
+        AccessToken = JwtToken(expires, key);
+        RefreshToken = AccessToken;
+        Expires = expires;
+    }
+
+    private string JwtToken(DateTime expiration, byte[] key)
+    {
         var handler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(config.Get("app.key"));
-        var expiration = config.Get("app.expiration.token");
-        var expires = DateTime.UtcNow.AddHours(Convert.ToDouble(expiration));
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity((new Claim[]
@@ -31,14 +37,31 @@ public class Token
                 new Claim(ClaimTypes.Name, User.Name),
                 new Claim(ClaimTypes.Email, User.Email),
             })),
-            Expires = expires,
+            Expires = expiration,
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha256Signature)
         };
-        var token = handler.WriteToken(handler.CreateToken(tokenDescriptor));
-        AccessToken = token;
+        return handler.WriteToken(handler.CreateToken(tokenDescriptor));
+    }
+
+    public void GenerateVisitToken()
+    {
+        var key = GetKey();
+        var expires = DateTime.UtcNow.AddMinutes(1);
+        AccessToken = JwtToken(expires, key);
         RefreshToken = AccessToken;
-        Expires = expires;
+    }
+
+    private string? GetDefaultExpirationDate()
+    {
+        var config = new ConfigApp();
+        return config.Get("app.expiration.token");
+    }
+
+    private byte[] GetKey()
+    {
+        var config = new ConfigApp();
+        return Encoding.ASCII.GetBytes(config.Get("app.key"));
     }
 }

@@ -28,7 +28,7 @@ void SendEmail(MessageDto messageDto, SmtpClient smtp)
     {
         Subject = messageDto.Subject,
         From = new MailAddress(messageDto.From),
-        Body = messageDto.Body,
+        Body =  messageDto.Body,
         IsBodyHtml = true,
     };
 
@@ -36,17 +36,6 @@ void SendEmail(MessageDto messageDto, SmtpClient smtp)
 
     smtp.SendMailAsync(message);
 }
-
-
-Console.WriteLine("rmq:  host: {0}, user: {1}, password: {2}. smtp: host: {3}, user: {4}: password: {5}",
-    Environment.GetEnvironmentVariable("RABBITMQ_HOST"),
-    Environment.GetEnvironmentVariable("RABBITMQ_USER"),
-    Environment.GetEnvironmentVariable("RABBITMQ_PASSWORD"),
-    Environment.GetEnvironmentVariable("SMTP_HOST"),
-    Environment.GetEnvironmentVariable("SMTP_USERNAME"),
-    Environment.GetEnvironmentVariable("SMTP_PASSWORD")
-
-);
 
 IConnection RabbitMQConnect(string user, string password, string host)
 {

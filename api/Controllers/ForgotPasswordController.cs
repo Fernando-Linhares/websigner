@@ -5,22 +5,35 @@ using System;
 using System.Net;
 using System.Net.Mail;
 using Api.Mails;
+using Api.Models;
 
 namespace Api.Controllers;
 
 [ApiController]
 [Route("/forgot-password")]
-public class ForgotPasswordController : BaseController
+public class ForgotPasswordController(DataContext context) : BaseController(context)
 {
-    public ForgotPasswordController(DataContext context) : base(context) {}
-
     [HttpPost]
-    public  IActionResult ForgotPassword([FromBody] ForgotPasswordRequest request)
+    public  async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
     {
         try
         {
+            User? user = _context.Users.FirstOrDefault(u => u.Email == request.Email);
+
+            var token = new Token
+            {
+                User = user,
+            };
+            token.GenerateVisitToken();
+            _context.Tokens.Add(token);
+            
+            await _context.SaveChangesAsync();
+            
             var mail = new ForgotPassword();
             mail.To = request.Email;
+            mail.Token = token.AccessToken;
+            mail.User = user;
+            
             var queueOutput = mail.DispatchOnQueue();
             return AnswerSuccess(queueOutput);
         }

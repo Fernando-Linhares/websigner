@@ -1,10 +1,21 @@
+# WebSigner
 
-### Overview
+## Overview
 
 Websigner is a web system to make digital signature in the web context application
 its can be a good system to store certificates and sign documents. Below you can see the steps to instalation and usage.
 
-### Instalation
+
+![login](resources/login.png)
+![dashboard](resources/dashboard.png)
+![reset-password](resources/reset-password.png)
+
+### Using RabbitMQ for emails
+![rabbitmq](resources/rabbitmq.png)
+
+
+
+## Instalation
 
 Install project cloning repository
 
@@ -16,7 +27,17 @@ Setup project configurations
 
 	sh ./setup.sh
 
-The project will be running port *4200* .
-Access the project login page on your browser **http://localhost:4200**
+The project will be running port *3000* .
+Access the project login page on your browser **http://localhost:3000**
 
 
+
+## Deppedencies
+
+<ul>
+  <li>docker & docker-compose</li>
+  <li>node ~20.x</li>
+  <li>ng ~18.x</li>
+  <li>dotnet ~8.x</li>
+  <li>dotnet ~8.x</li>
+</ul>

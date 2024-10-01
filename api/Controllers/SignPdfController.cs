@@ -9,19 +9,12 @@ namespace Api.Controllers;
 [Authorize]
 [ApiController]
 [Route("sign/pdf")]
-public class SignPdfController : BaseController
+public class SignPdfController(ISignature signature, DataContext dataContext) : BaseController(dataContext)
 {
-   private readonly ISignature _signature;
-   private readonly DataContext _context;
-   
-   public SignPdfController(ISignature signature, DataContext dataContext): base(dataContext)
-   {
-      _signature = signature;
-      _context = dataContext;
-   }
-   
+   private readonly DataContext _context = dataContext;
+
    [HttpPost]
-   public async Task<IActionResult> SignPdf(SignFilePdfRequest request)
+   public async Task<IActionResult> SignPdf([FromForm] SignFilePdfRequest request)
    {
       var cert = await _context.Certificates.FindAsync(request.CertId);
 
@@ -45,7 +38,7 @@ public class SignPdfController : BaseController
             request.File,
             request.Pin);
 
-         var output = await _signature.Signature(inputDto);
+         var output = await signature.Signature(inputDto);
          var fileSinged = new Api.Models.File
          {
             FileName = output.SignedFile,

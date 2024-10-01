@@ -26,7 +26,6 @@ export class RegisterComponent {
   password = { text: '', visible: false, notValid: false };
   confirmPassword = { text: '', visible: false, notValid: false };
   spinOpen: boolean = false;
-
   error: Array<any> = [];
 
   constructor(
@@ -46,7 +45,7 @@ export class RegisterComponent {
     try {
       this.spinOpen = true;
 
-        if (this.hasEmptyFields()) {
+      if (this.hasEmptyFields()) {
         return;
       }
 
@@ -90,7 +89,7 @@ export class RegisterComponent {
 
   private hasEmptyFields(): boolean
   {
-    if (this.name.text.length == 0) {
+    if (this.password.text.length == 0) {
       this.password.notValid = true;
       this.error.push({field: "password", message: "field password cannot be empty"});
     }

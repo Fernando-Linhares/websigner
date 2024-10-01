@@ -9,14 +9,14 @@ public abstract class Mail: IQueuelable
     public abstract string To { get; set; }
     protected abstract string Handler();
     public virtual List<string>? Attachments { get; set; }
-
+    
     public MailMessage ToMessage()
     {
         return new MailMessage
         {
             Subject = Subject,
             From = new MailAddress(GetRootSmtpEmail()),
-            Body = Handler(),
+            Body =  Handler(),
             IsBodyHtml = true,
         };
     }

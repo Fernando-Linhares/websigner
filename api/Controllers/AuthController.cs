@@ -7,14 +7,9 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("[controller]/[action]")]
-public class AuthController: BaseController
+public class AuthController(DataContext context) : BaseController(context)
 {
-    private readonly DataContext _context;
-    
-    public AuthController(DataContext context): base(context)
-    {
-        _context = context;
-    }
+    private readonly DataContext _context = context;
 
     [HttpPost]
     public async Task<IActionResult> Login([FromBody] Requests.LoginRequest request)

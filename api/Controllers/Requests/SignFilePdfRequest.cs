@@ -1,8 +1,3 @@
 namespace Api.Controllers.Requests;
 
-public class SignFilePdfRequest
-{
-    public long CertId { get; set; }
-    public IFormFile File { get; set; }
-    public string Pin { get; set; }
-}
+public record SignFilePdfRequest(long CertId, IFormFile File, string Pin);

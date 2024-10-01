@@ -7,15 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers;
 
 [ApiController]
-public abstract class BaseController: ControllerBase
+public abstract class BaseController(DataContext context) : ControllerBase
 {
-    protected readonly DataContext _context;
+    protected readonly DataContext _context = context;
 
-    public BaseController(DataContext context)
-    {
-        _context = context;
-    }
-    
     protected User? CurrentUser()
     {
         string? email =  User.FindFirst(ClaimTypes.Email)?.Value;

@@ -41,6 +41,7 @@ services:
       - signer.network
     depends_on:
       - rabbitmq
+    restart: always
   ui:
     container_name: ui
     image: nginx:latest
