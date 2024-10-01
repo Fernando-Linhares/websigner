@@ -31,6 +31,7 @@ The project will be running port *3000* .
 Access the project login page on your browser **http://localhost:3000**
 
 
+[![Video](https://youtu.be/SpcVkhw7xIw/0.jpg)](https://youtu.be/SpcVkhw7xIw)
 
 ## Deppedencies
 
