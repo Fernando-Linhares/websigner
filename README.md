@@ -36,7 +36,7 @@ Access the project login page on your browser **http://localhost:3000**
 
 
 
-## Deppedencies
+## Dependencies
 
 <ul>
   <li>docker & docker-compose</li>
