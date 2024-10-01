@@ -32,7 +32,7 @@ Access the project login page on your browser **http://localhost:3000**
 
 ## Usage
 
-[![Watch the video](resources/dashboard.png)](https://youtu.be/SpcVkhw7xIw)
+[![Watch the video](https://youtu.be/SpcVkhw7xIw)](https://youtu.be/SpcVkhw7xIw)
 
 ## Deppedencies
 
